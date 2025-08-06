@@ -1,0 +1,31 @@
+services:
+  app:
+    restart: always
+    build: .
+    container_name: "clinichub_app_${ENVIROMENT}"
+    command: sh -c "yarn build && yarn start"
+    depends_on:
+      - postgres
+    ports:
+      - '${APP_PORT}:${APP_PORT}'
+    volumes:
+      - .:/usr/app
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+
+  postgres:
+    restart: always
+    container_name: "clinichub_db_${ENVIROMENT}"
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+    ports:
+      - '${DB_PORT}:5432'

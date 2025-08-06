@@ -1,0 +1,46 @@
+name: Deploy API
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - homolog
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+
+    - name: Deploy to Server
+      run: |
+        BRANCH=${{ github.ref_name }}
+        if [ "$BRANCH" = "main" ]; then
+          TARGET_DIR="clinichub.api"
+        elif [ "$BRANCH" = "dev" ]; then
+          TARGET_DIR="dev.clinichub.api"
+        elif [ "$BRANCH" = "homolog" ]; then
+          TARGET_DIR="homolog.clinichub.api"
+        else
+          echo "Branch $BRANCH not configured for deployment."
+          exit 1
+        fi
+
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
+          cd /home/${{ secrets.SERVER_USER }}/$TARGET_DIR
+          git config --global --add safe.directory /home/${{ secrets.SERVER_USER }}/$TARGET_DIR
+          git pull origin $BRANCH
+          sudo docker-compose stop app
+          sudo docker-compose rm -f app
+          sudo docker-compose up --build -d app
+          yarn typeorm migration:run
+          yarn typeorm schema:sync
+        EOF
