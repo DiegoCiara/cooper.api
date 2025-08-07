@@ -6,6 +6,9 @@ import sendMail from '@src/app/services/mail/sendEmail';
 import authentication from '../services/app/auth/authentication';
 import forgotPasswordService from '../services/app/auth/forgot-password';
 import resetPasswordService from '../services/app/auth/reset-password';
+import { HttpError } from '@utils/http/errors/http-errors';
+import validateEmailAndAuthenticate from '../services/app/account/validate-email';
+import resendValidateEmailService from '../services/app/account/resend-email-validation';
 
 dotenv.config();
 
@@ -35,7 +38,41 @@ class AuthController {
       res.status(200).json(auth);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Erro interno na autenticação.' });
+      if (error instanceof HttpError)
+        res.status(error.status).json({ message: error.message });
+      return;
+    }
+  }
+
+  public async validateEmail(req: Request, res: Response): Promise<void> {
+    try {
+      const { email, token }: UserInterface = req.body;
+
+      const auth = await validateEmailAndAuthenticate(email, token);
+
+      console.log('EMAIL VALIDADO COM SUSESSU');
+      // Envie a resposta após o envio do email
+      res.status(200).json(auth);
+    } catch (error) {
+      console.error(error);
+      if (error instanceof HttpError)
+        res.status(error.status).json({ message: error.message });
+      return;
+    }
+  }
+  public async resendValidateEmail(req: Request, res: Response): Promise<void> {
+    try {
+      const { email } = req.body;
+
+      const resend = await resendValidateEmailService({ email });
+
+      res.status(200).json(resend);
+      return;
+    } catch (error) {
+      console.log(error);
+      if (error instanceof HttpError)
+        res.status(error.status).json({ message: error.message });
+      return;
     }
   }
 
@@ -50,7 +87,9 @@ class AuthController {
         .json({ message: message});
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Erro interno na autenticação.' });
+      if (error instanceof HttpError)
+        res.status(error.status).json({ message: error.message });
+      return;
     }
   }
 
@@ -62,8 +101,10 @@ class AuthController {
 
       res.status(200).json({ message: message });
     } catch (error) {
-      console.log(error);
-      res.status(400).json({ error: 'Cannot reset password, try again' });
+      console.error(error);
+      if (error instanceof HttpError)
+        res.status(error.status).json({ message: error.message });
+      return;
     }
   }
 }

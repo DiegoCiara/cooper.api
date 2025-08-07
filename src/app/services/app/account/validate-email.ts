@@ -1,4 +1,3 @@
-
 import Agent from '@entities/Agent';
 import User from '@entities/User';
 import { generateToken } from '@utils/auth/generateToken';
@@ -10,54 +9,61 @@ import {
 import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+
 
 interface Authentication {
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  };
+  user: { id: string; name: string; email: string; };
   agents: Agent[];
   token: string;
 }
 
-export default async function authentication(
+export default async function validateEmailAndAuthenticate(
   email: string,
-  password: string,
+  token: string,
 ): Promise<Authentication> {
   try {
-    if (!email || !password) {
+    if (!email || !token) {
       throw new BadRequest('Dados inválidos.');
     }
 
-    const user = await User.findOne({
-      where: { email },
-      relations: ['agents', 'agents.workspace'],
+    let decoded: any;
+    try {
+      decoded = jwt.verify(token, `${process.env.SECRET}`);
+    } catch (err) {
+      throw new Unauthorized('Token de verificação inválido');
+    }
+
+    if (!decoded.id || !decoded.email || decoded.email !== email) {
+      throw new Unauthorized();
+    }
+
+    console.log('DECODED JWT =====>', decoded);
+
+    const user = await User.findOne(decoded.id, {
+      where: { email: decoded.email },
+      relations: ['accesses', 'accesses.workspace'],
     });
 
     if (!user) {
       throw new NotFound('Usuário não encontrado.');
     }
 
-    if (!(await bcrypt.compare(password, user.password_hash))) {
-      throw new Unauthorized('Senha inválida');
-    }
-
-    const agents = user.agents
+    const agents = user.agents;
 
     return {
       user: {
         id: user.id,
-        name: user.name,
         email: user.email,
+        name: user.name,
       },
       agents,
-      token: generateToken(user),
+      token: generateToken({ id: user.id }),
     };
   } catch (error) {
     if (error instanceof HttpError) {
       throw error;
     }
-    throw new InternalServerError('Erro ao autenticar com a plataforma');
+    throw new InternalServerError('Erro ao validar o e-mail.');
   }
 }

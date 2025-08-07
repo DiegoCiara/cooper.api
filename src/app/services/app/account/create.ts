@@ -7,6 +7,7 @@ import { InternalServerError } from '@utils/http/errors/internal-errors';
 import { BadGateway, BadRequest, Conflict } from '@utils/http/errors/controlled-errors';
 import emailValidator from '@utils/emailValidator';
 import { createCustomer } from '../../stripe/customer/createCustomer';
+import { generateToken } from '@utils/auth/generateToken';
 
 interface CreateAccountProps {
   workspace_type: 'PERSONAL' | 'BUSINESS';
@@ -63,15 +64,17 @@ export default async function createAccountService({
     const userName = firstName(name);
     const client = process.env.CLIENT_URL;
 
+    const token = generateToken({ id: user.id, email: user.email })
+
     const mail = await sendMail(
-      'newUser',
+      'validateEmail',
       'no-reply',
-      `Bem vindo ao Whats AI, ${userName}!`,
+      `Valide sua conta, ${userName}!`,
       {
         client,
-        name,
-        email,
-        password,
+        name: userName,
+        token,
+        email
       },
     );
 
