@@ -17,6 +17,9 @@ class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
+  @Column()
+  customer_id!: string;
+
   @Column({ nullable: true })
   name!: string;
 
@@ -26,15 +29,15 @@ class User extends BaseEntity {
   @Column({ nullable: true })
   picture!: string;
 
-  @Column({ nullable: true, default: false })
+  @Column({ default: false })
   has_reset_pass!: boolean;
 
   @Column()
   password_hash!: string;
 
-  @Column()
-  customer_id!: string;
-
+  @Column({ default: false })
+  has_validate_email!: boolean;
+  
   @Column({ nullable: true })
   token_reset_password!: string;
 

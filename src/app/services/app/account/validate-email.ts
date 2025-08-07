@@ -13,8 +13,7 @@ import jwt from 'jsonwebtoken';
 
 
 interface Authentication {
-  user: { id: string; name: string; email: string; };
-  agents: Agent[];
+  user: { id: string; name: string; email: string; has_validate_email: boolean };
   token: string;
 }
 
@@ -42,22 +41,21 @@ export default async function validateEmailAndAuthenticate(
 
     const user = await User.findOne(decoded.id, {
       where: { email: decoded.email },
-      relations: ['accesses', 'accesses.workspace'],
     });
 
     if (!user) {
       throw new NotFound('Usuário não encontrado.');
     }
 
-    const agents = user.agents;
+    await User.update(user.id, { has_validate_email: true })
 
     return {
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
+        has_validate_email: true,
       },
-      agents,
       token: generateToken({ id: user.id }),
     };
   } catch (error) {
