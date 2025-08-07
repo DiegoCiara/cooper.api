@@ -10,9 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import Access from './Access';
-
-
+import Agent from './Agent';
 
 @Entity({ name: 'users' })
 class User extends BaseEntity {
@@ -23,13 +21,7 @@ class User extends BaseEntity {
   name!: string;
 
   @Column()
-  cpf!: string;
-
-  @Column()
   email!: string;
-
-  @Column({ nullable: true })
-  regional_council_number!: string;
 
   @Column({ nullable: true })
   picture!: string;
@@ -40,14 +32,17 @@ class User extends BaseEntity {
   @Column()
   password_hash!: string;
 
+  @Column()
+  customer_id!: string;
+
   @Column({ nullable: true })
   token_reset_password!: string;
 
   @Column({ nullable: true, type: 'timestamp' })
   reset_password_expires!: Date;
 
-  @OneToMany(() => Access, (access) => access.user)
-  accesses!: Access[]
+  @OneToMany(() => Agent, (access) => access.user)
+  agents!: Agent[];
 
   @CreateDateColumn()
   created_at!: Date;

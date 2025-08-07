@@ -16,8 +16,19 @@ export class NotFound extends HttpError {
     super(400, message);
   }
 }
+export class PaymentRequired extends HttpError {
+  constructor(message = "Pagamento obrigatório.") {
+    super(402, message);
+  }
+}
 export class Unauthorized extends HttpError {
-  constructor(message = "Não autorizado") {
+  constructor(message = "Não autorizado.") {
     super(401, message);
+  }
+}
+
+export class BadGateway extends HttpError {
+  constructor(message = "Ocorreu um erro ao processar serviço externo") {
+    super(502, message);
   }
 }

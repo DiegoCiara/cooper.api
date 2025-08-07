@@ -1,7 +1,7 @@
 import User from '@entities/User';
 import bcrypt from 'bcryptjs';
 import { users } from './dataMock';
-import Workspace from '@entities/Workspace';
+import Workspace from '@entities/Agent';
 import Access from '@entities/Access';
 
 const mocks = async (): Promise<void> => {
@@ -12,7 +12,6 @@ const mocks = async (): Promise<void> => {
       console.log('Mocks ok');
       return;
     }
-
 
     for (const user of users) {
       const password_hash = await bcrypt.hash(user.password_hash, 10);
@@ -25,7 +24,7 @@ const mocks = async (): Promise<void> => {
       console.log(`👤 Usuário "${createdUser.name}" criado com sucesso`);
 
       const workspace = await Workspace.create({
-        name: user.workspaceName || "VALOR PADRÃO",
+        name: user.workspaceName || 'VALOR PADRÃO',
         type: user.workspaceType,
         cnpj: user.cnpj,
       }).save();
@@ -33,11 +32,10 @@ const mocks = async (): Promise<void> => {
 
       const access = await Access.create({
         user: createdUser,
-        workspace: workspace
-      }).save()
+        workspace: workspace,
+      }).save();
       console.log(`👤 Access "${access.role}" criado com sucesso`);
     }
-
   } catch (error) {
     console.log('Erro ao rodar mocks!', error);
   }

@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import Users from '@entities/User';
+import emailValidator from '@utils/emailValidator';
 import createAccountService from '../services/app/account/create';
 import { HttpError } from '../../utils/http/errors/http-errors';
 import updateUserService from '../services/app/account/update';

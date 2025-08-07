@@ -1,4 +1,5 @@
-import Access from '@entities/Access';
+
+import Agent from '@entities/Agent';
 import User from '@entities/User';
 import { generateToken } from '@utils/auth/generateToken';
 import {
@@ -10,17 +11,9 @@ import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
 import bcrypt from 'bcryptjs';
 
-interface WorkspaceAccesses {
-  picture: string;
-  workspace_id: string;
-  type: string;
-  name: string;
-  role: string;
-}
-
 interface Authentication {
   user: User;
-  accesses: WorkspaceAccesses[];
+  agents: Agent[];
   token: string;
 }
 
@@ -35,7 +28,7 @@ export default async function authentication(
 
     const user = await User.findOne({
       where: { email },
-      relations: ['accesses', 'accesses.workspace'],
+      relations: ['agents', 'agents.workspace'],
     });
 
     if (!user) {
@@ -46,17 +39,11 @@ export default async function authentication(
       throw new Unauthorized('Senha inválida');
     }
 
-    const accesses = user.accesses.map((access) => ({
-      picture: access.workspace.picture,
-      workspace_id: access.workspace.id,
-      type: access.workspace.type,
-      name: access.workspace.name,
-      role: access.role,
-    }));
+    const agents = user.agents
 
     return {
       user,
-      accesses,
+      agents,
       token: generateToken(user),
     };
   } catch (error) {

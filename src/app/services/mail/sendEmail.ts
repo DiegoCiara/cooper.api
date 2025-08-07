@@ -9,7 +9,7 @@ async function sendMail(
   from: string,
   subject: string,
   body: any,
-): Promise<CreateEmailResponse>{
+): Promise<CreateEmailResponse> {
   try {
     // 1. Lê e compila o template Handlebars
     const templatePath = `./src/resources/mail/${templateName}.html`;
@@ -19,12 +19,12 @@ async function sendMail(
 
     // 2. Envia o e-mail usando a API do Resend
     const resendmail = await resend.emails.send({
-      from: `ClinicHUB <${from}@case.app.br>`,
+      from: `Whats AI <${from}@case.app.br>`,
       to: body.email,
       subject,
       html: htmlToSend,
     });
-    return resendmail
+    return resendmail;
   } catch (error) {
     console.error('Falha ao enviar e-mail:', error);
     throw error;

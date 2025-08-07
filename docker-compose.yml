@@ -2,7 +2,7 @@ services:
   app:
     restart: always
     build: .
-    container_name: "clinichub_app_${ENVIROMENT}"
+    container_name: 'whatsai_app_${ENVIROMENT}'
     command: sh -c "yarn build && yarn start"
     depends_on:
       - postgres
@@ -19,7 +19,7 @@ services:
 
   postgres:
     restart: always
-    container_name: "clinichub_db_${ENVIROMENT}"
+    container_name: 'whatsai_db_${ENVIROMENT}'
     image: postgres:latest
     environment:
       - POSTGRES_DB=${DB_NAME}

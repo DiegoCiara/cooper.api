@@ -28,7 +28,7 @@
       "@src/*": ["./src/*"]
     }
   },
-  "include": ["src", "__tests__", "src/app/.ts", "src/app/controllers/.ts",],
+  "include": ["src", "__tests__", "src/app/.ts", "src/app/controllers/AgentController.ts",],
   "exclude": ["node_modules"]
 }
 

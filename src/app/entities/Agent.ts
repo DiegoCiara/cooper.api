@@ -5,37 +5,41 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
-  OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import Access from './Access';
+import User from './User';
+
 @Entity({ name: 'workspaces' })
-class Workspace extends BaseEntity {
+class Agent extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
   @Column()
   name!: string;
 
+  @Column()
+  model!: string;
+
   @Column({ nullable: true })
-  cnpj!: string;
+  instructions!: string;
 
   @Column({ type: 'enum', enum: ['PERSONAL', 'BUSINESS'], default: 'PERSONAL' })
-  type!: string;
+  temperature!: string;
 
   @Column({ nullable: true })
   picture!: string;
 
+  @Column({ nullable: true })
+  subscription_id!: string;
+
   @Column({ type: 'jsonb', nullable: true })
   metadata!: any;
 
-  @OneToMany(() => Access, (access) => access.workspace)
-  accesses!: Access[];
+  @ManyToOne(() => User, (token) => token.agents)
+  @JoinColumn([{ name: 'user', referencedColumnName: 'id' }])
+  user!: User;
 
   @CreateDateColumn()
   createdAt!: Date;
@@ -47,4 +51,4 @@ class Workspace extends BaseEntity {
   deletedAt!: Date; // Modificação feita aqui para permitir valores nulos
 }
 
-export default Workspace;
+export default Agent;

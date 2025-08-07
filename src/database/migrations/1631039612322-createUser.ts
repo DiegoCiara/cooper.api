@@ -23,16 +23,11 @@ export class createUser1631039612322 implements MigrationInterface {
             type: 'varchar',
           },
           {
-            name: 'cpf',
-            type: 'varchar',
-          },
-          {
-            name: 'regional_council_number',
-            type: 'varchar',
-            isNullable: true,
-          },
-          {
             name: 'email',
+            type: 'varchar',
+          },
+          {
+            name: 'customer_id',
             type: 'varchar',
           },
           {

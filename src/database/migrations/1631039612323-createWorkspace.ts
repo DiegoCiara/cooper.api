@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
-export class createWorkspace1631039612323 implements MigrationInterface {
+export class createAgnet1631039612323 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'workspaces',
+        name: 'agents',
         columns: [
           {
             name: 'id',
@@ -16,12 +16,17 @@ export class createWorkspace1631039612323 implements MigrationInterface {
           {
             name: 'name',
             type: 'varchar',
+          },
+          {
+            name: 'instructions',
+            type: 'varchar',
             isNullable: true,
           },
           {
-            name: 'cnpj',
-            type: 'varchar',
-            isNullable: true,
+            name: 'temperature',
+            type: 'enum',
+            enum: ['PERSONAL', 'BUSINESS'],
+            default: `'PERSONAL'`,
           },
           {
             name: 'picture',
@@ -29,15 +34,18 @@ export class createWorkspace1631039612323 implements MigrationInterface {
             isNullable: true,
           },
           {
-            name: 'type',
-            type: 'enum',
-            enum: ['PERSONAL', 'BUSINESS'],
-            default: `'PERSONAL'`,
+            name: 'subscription_id',
+            type: 'varchar',
+            isNullable: true,
           },
           {
             name: 'metadata',
             type: 'jsonb',
             isNullable: true,
+          },
+          {
+            name: 'user',
+            type: 'uuid',
           },
           {
             name: 'createdAt',
@@ -57,10 +65,18 @@ export class createWorkspace1631039612323 implements MigrationInterface {
         ],
       })
     );
+    await queryRunner.createForeignKey(
+      'agents',
+      new TableForeignKey({
+        columnNames: ['user'],
+        referencedTableName: 'users',
+        referencedColumnNames: ['id'],
+      }),
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('workspaces');
+    await queryRunner.dropTable('agents');
   }
 }
 
