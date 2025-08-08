@@ -11,6 +11,8 @@ export const findProduct = async (id: string) => {
 
     const price = await stripe.prices.retrieve(product?.default_price);
 
+    
+
     return {...product, price};
   } catch (error) {
     console.error(error);

@@ -1,5 +1,8 @@
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
+import { BadGateway } from '@utils/http/errors/controlled-errors';
+import { HttpError } from '@utils/http/errors/http-errors';
+import { InternalServerError } from '@utils/http/errors/internal-errors';
 
 dotenv.config();
 
@@ -9,6 +12,9 @@ export const listPlans = async () => {
   try {
     const products: any = await stripe.products.list({ active: true });
 
+    if (!products) {
+      throw new BadGateway();
+    }
     const plans: any = await Promise.all(
       products.data.map(async (e: any) => {
         if (e.default_price) {
@@ -18,11 +24,17 @@ export const listPlans = async () => {
             price,
           };
         }
-      })
+      }),
     );
+
+    if (!plans) {
+      throw new BadGateway();
+    }
     return plans;
   } catch (error) {
-    console.error(error);
-    return;
+    if (error instanceof HttpError) {
+      throw error;
+    }
+    throw new InternalServerError();
   }
 };

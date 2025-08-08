@@ -4,10 +4,14 @@ import bcryptjs from 'bcryptjs';
 import { firstName } from '@utils/formats';
 import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
-import { BadRequest, Conflict, PaymentRequired } from '@utils/http/errors/controlled-errors';
+import {
+  BadRequest,
+  Conflict,
+  PaymentRequired,
+} from '@utils/http/errors/controlled-errors';
 import emailValidator from '@utils/emailValidator';
 import Agent from '@entities/Agent';
-import { createSubscription } from '../../stripe/subscriptions/createSubscription';
+import { createSubscription } from '../billing/stripe/subscriptions/create-subscription';
 
 interface CreateAgentProps {
   user_id: string;
@@ -42,7 +46,9 @@ export default async function createAgentService({
     );
 
     if (!subscription || !subscription.id) {
-      throw new PaymentRequired('Pagamento não processado, altere o método de pagamento e tente novamente');
+      throw new PaymentRequired(
+        'Pagamento não processado, altere o método de pagamento e tente novamente',
+      );
     }
 
     const ia = await Agent.create({

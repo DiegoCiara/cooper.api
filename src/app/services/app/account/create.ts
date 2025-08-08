@@ -4,9 +4,13 @@ import bcryptjs from 'bcryptjs';
 import { firstName } from '@utils/formats';
 import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
-import { BadGateway, BadRequest, Conflict } from '@utils/http/errors/controlled-errors';
+import {
+  BadGateway,
+  BadRequest,
+  Conflict,
+} from '@utils/http/errors/controlled-errors';
 import emailValidator from '@utils/emailValidator';
-import { createCustomer } from '../../stripe/customer/createCustomer';
+import { createCustomer } from '../billing/stripe/customer/create-customer';
 import { generateToken } from '@utils/auth/generateToken';
 
 interface CreateAccountProps {
@@ -55,7 +59,7 @@ export default async function createAccountService({
       name: name,
       email: email,
       password_hash,
-      customer_id: customer.id
+      customer_id: customer.id,
     }).save();
 
     if (!user) {
@@ -65,7 +69,7 @@ export default async function createAccountService({
     const userName = firstName(name);
     const client = process.env.CLIENT_URL;
 
-    const token = generateToken({ id: user.id, email: user.email })
+    const token = generateToken({ id: user.id, email: user.email });
 
     const mail = await sendMail(
       'validateEmail',
@@ -75,11 +79,11 @@ export default async function createAccountService({
         client,
         name: userName,
         token,
-        email
+        email,
       },
     );
 
-    console.log(mail)
+    console.log(mail);
     if (!mail.data?.id) {
       throw new InternalServerError('Erro ao enviar e-mail de boas vindas');
     }
