@@ -55,6 +55,7 @@ export default async function createAccountService({
       name: name,
       email: email,
       password_hash,
+      customer_id: customer.id
     }).save();
 
     if (!user) {
@@ -78,6 +79,7 @@ export default async function createAccountService({
       },
     );
 
+    console.log(mail)
     if (!mail.data?.id) {
       throw new InternalServerError('Erro ao enviar e-mail de boas vindas');
     }
@@ -86,7 +88,7 @@ export default async function createAccountService({
       id: user.id,
     };
   } catch (error) {
-    console.log('create');
+    console.log(error);
     if (error instanceof HttpError) {
       throw error;
     }

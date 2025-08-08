@@ -50,7 +50,7 @@ routes.get('/', (req, res) => {
 
 routes.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 routes.use('/auth/', AuthRoutes);
-routes.use('/account', ensureAuthenticated, AccountRoutes);
+routes.use('/account', AccountRoutes);
 routes.use('/agent', ensureAuthenticated, AgentRoutes);
 
 export default routes;
