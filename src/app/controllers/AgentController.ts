@@ -1,22 +1,16 @@
 import { Request, Response } from 'express';
-import Users from '@entities/User';
-import emailValidator from '@utils/emailValidator';
-import createAccountService from '../services/app/account/create';
 import { HttpError } from '../../utils/http/errors/http-errors';
 import updateUserService from '../services/app/account/update';
-import findAccount from '../services/app/account/find';
 import createAgentService from '../services/app/agent/create';
+import findAgents from '../services/app/agent/find';
 
 
 class AccountController {
   public async find(req: Request, res: Response): Promise<void> {
     try {
-      const user = await findAccount(req.userId);
+      const agents = await findAgents(req.userId);
 
-      res.status(200).json({
-        message: 'Success!',
-        user,
-      });
+      res.status(200).json(agents);
       return;
     } catch (error) {
       console.log(error);

@@ -55,6 +55,7 @@ export default async function createAgentService({
     const ia = await Agent.create({
       ...agent,
       model: 'gpt-40-nano',
+      user
     }).save();
 
     if (!ia) {
