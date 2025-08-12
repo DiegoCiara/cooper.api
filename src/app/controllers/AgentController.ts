@@ -34,7 +34,7 @@ class AccountController {
       const user = await createAgentService({ user_id: req.userId, agent, price_id, payment_method_id});
 
       res.status(201).json({
-        message: 'Conta criada com sucesso!',
+        message: 'Agente criado com sucesso!',
         id: user.id,
       });
       return;
