@@ -3,29 +3,36 @@ import dotenv from 'dotenv';
 import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
 import { BadGateway, NotFound } from '@utils/http/errors/controlled-errors';
+import Agent from '@entities/Agent';
 
 dotenv.config();
 
 const stripe = new Stripe(`${process.env.STRIPE_KEY}`);
 
 export const updateSubscription = async (
-  subscriptionId: string,
+  agent_id: string,
   priceId: string,
   paymentMethodId: string,
 ) => {
   try {
     // 1. Recupera a assinatura atual
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    const agent = await Agent.findOne(agent_id);
+
+    if (!agent) {
+      throw new NotFound('Agente não encontrado');
+    }
+
+    const subscription = await stripe.subscriptions.retrieve(agent.subscription_id);
 
     if (!subscription) {
-      throw new NotFound("Assinatura não encontrada");
+      throw new NotFound('Assinatura não encontrada');
     }
 
     const currentItem = subscription.items.data[0]; // Assume que há apenas um item na assinatura
 
     // 2. Atualiza a assinatura com o novo preço e comportamento de rateio
     const updatedSubscription = await stripe.subscriptions.update(
-      subscriptionId,
+      agent.subscription_id,
       {
         default_payment_method: paymentMethodId,
         items: [

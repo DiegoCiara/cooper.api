@@ -6,6 +6,7 @@ import swaggerUi from 'swagger-ui-express';
 import { ensureAuthenticated } from '@middlewares/ensureAuthenticated';
 import AgentRoutes from './agent.routes';
 import AiRoutes from './ai.routes';
+import BillingRoutes from './billing.routes';
 
 const routes = Router();
 
@@ -54,5 +55,6 @@ routes.use('/auth/', AuthRoutes);
 routes.use('/account', AccountRoutes);
 routes.use('/agent', ensureAuthenticated, AgentRoutes);
 routes.use('/ai', ensureAuthenticated, AiRoutes);
+routes.use('/billing', ensureAuthenticated, BillingRoutes);
 
 export default routes;

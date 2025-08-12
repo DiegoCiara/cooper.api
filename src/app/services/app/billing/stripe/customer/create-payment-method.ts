@@ -2,7 +2,8 @@ import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
-import { BadGateway } from '@utils/http/errors/controlled-errors';
+import { BadGateway, NotFound } from '@utils/http/errors/controlled-errors';
+import User from '@entities/User';
 
 dotenv.config();
 
@@ -15,12 +16,17 @@ interface CustomerStripe {
 }
 
 export const setPaymentMethodAsDefault = async (
-  customerId: string,
+  user_id: string,
   paymentMethodId: string,
 ) => {
-  console.log(customerId, paymentMethodId);
+  console.log(user_id, paymentMethodId);
   try {
-    const method = await stripe.customers.update(customerId, {
+    const user = await User.findOne(user_id);
+
+    if (!user) {
+      throw new NotFound('Usuário não encontrado');
+    }
+    const method = await stripe.customers.update(user.customer_id, {
       invoice_settings: {
         default_payment_method: paymentMethodId,
       },
@@ -41,10 +47,15 @@ export const setPaymentMethodAsDefault = async (
   }
 };
 
-export const createPaymentIntent = async (customerId: string) => {
+export const createPaymentIntent = async (user_id: string) => {
   try {
+    const user = await User.findOne(user_id);
+
+    if (!user) {
+      throw new NotFound();
+    }
     const intent = await stripe.setupIntents.create({
-      customer: customerId,
+      customer: user.customer_id,
       payment_method_types: ['card'],
     });
 

@@ -1,17 +1,24 @@
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
-import { BadGateway } from '@utils/http/errors/controlled-errors';
+import { BadGateway, NotFound } from '@utils/http/errors/controlled-errors';
 import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
+import Agent from '@entities/Agent';
 
 dotenv.config();
 
 const stripe = new Stripe(`${process.env.STRIPE_KEY}`);
 
-export const listSubscription = async (subsctiptionId: string) => {
+export const findSubscriptionService = async (agent_id: string) => {
   try {
-    const subcription: any =
-      await stripe.subscriptions.retrieve(subsctiptionId);
+    const agent = await Agent.findOne(agent_id);
+
+    if (!agent) {
+      throw new NotFound('Erro ao buscar subscriprion');
+    }
+    const subcription: any = await stripe.subscriptions.retrieve(
+      agent.subscription_id,
+    );
 
     if (!subcription) {
       throw new BadGateway('Erro ao buscar subscriprion');

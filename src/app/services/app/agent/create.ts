@@ -29,6 +29,7 @@ export default async function createAgentService({
   id: string;
 }> {
   try {
+    // console.log(user_id, agent, price_id, payment_method_id)
     if (!user_id || !agent || !price_id || !payment_method_id) {
       throw new BadRequest('Dados incompletos!');
     }
@@ -64,7 +65,7 @@ export default async function createAgentService({
       id: ia.id,
     };
   } catch (error) {
-    console.log('create');
+    console.log(error);
     if (error instanceof HttpError) {
       throw error;
     }

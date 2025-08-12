@@ -28,7 +28,7 @@ export class Unauthorized extends HttpError {
 }
 
 export class BadGateway extends HttpError {
-  constructor(message = "Ocorreu um erro ao processar serviço externo") {
+  constructor(message = "Erro ao processar serviço externo") {
     super(502, message);
   }
 }

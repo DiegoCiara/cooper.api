@@ -14,6 +14,9 @@ export const createSubscription = async (
   paymentMethodId: string,
 ) => {
   try {
+
+    console.log(customerId, priceId, paymentMethodId)
+
     const price = await stripe.prices.retrieve(priceId);
 
     if (!price) {
@@ -43,6 +46,7 @@ export const createSubscription = async (
 
     return invoices;
   } catch (error) {
+    console.log(error)
     if (error instanceof HttpError) {
       throw error;
     }
