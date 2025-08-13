@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import { HttpError } from '../../utils/http/errors/http-errors';
-import { listPlans } from '../services/app/billing/stripe/products/list-plans';
+import { listPlans } from '../services/stripe/products/list-plans';
 import { findProduct } from '../services/app/billing/findProduct';
-import { findSubscriptionService } from '../services/app/billing/stripe/subscriptions/find-subscription';
-import { listPaymentMethods } from '../services/app/billing/stripe/customer/list-payment-methods';
+import { findSubscriptionService } from '../services/stripe/subscriptions/find-subscription';
+import { listPaymentMethods } from '../services/stripe/customer/list-payment-methods';
 import {
   createPaymentIntent,
   setPaymentMethodAsDefault,
-} from '../services/app/billing/stripe/customer/create-payment-method';
-import { updateSubscription } from '../services/app/billing/stripe/subscriptions/update-subscription';
+} from '../services/stripe/customer/create-payment-method';
+import { updateSubscription } from '../services/stripe/subscriptions/update-subscription';
 
 class BillingController {
   public async findPlans(req: Request, res: Response): Promise<void> {
@@ -27,7 +27,7 @@ class BillingController {
     try {
       const { price_id } = req.params;
       const data = await findProduct(price_id);
-      console.log(data)
+      console.log(data);
       res.status(200).json(data);
     } catch (error) {
       if (error instanceof HttpError)
@@ -51,7 +51,6 @@ class BillingController {
   }
   public async listPaymentsMethods(req: Request, res: Response): Promise<void> {
     try {
-
       const subscription = await listPaymentMethods(req.userId);
 
       res.status(200).json(subscription);

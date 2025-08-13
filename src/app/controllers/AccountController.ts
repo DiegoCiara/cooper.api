@@ -20,9 +20,7 @@ class AccountController {
     try {
       const user = await findAccount(req.userId);
 
-      res.status(200).json({
-        message: 'Success!',
-        user });
+      res.status(200).json(user);
       return;
     } catch (error) {
       console.log(error);

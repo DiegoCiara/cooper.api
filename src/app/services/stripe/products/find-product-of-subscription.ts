@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
-import { findProduct } from '../../findProduct';
+import { findProduct } from '../../app/billing/findProduct';
 import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
 import { BadGateway, NotFound } from '@utils/http/errors/controlled-errors';

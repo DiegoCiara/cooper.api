@@ -30,6 +30,7 @@ export const findSubscriptionService = async (agent_id: string) => {
     }
     return { ...product, plan: subcription.plan };
   } catch (error) {
+    console.log(error)
     if (error instanceof HttpError) {
       throw error;
     }

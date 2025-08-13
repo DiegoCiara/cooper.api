@@ -1,29 +1,25 @@
-import User from '@entities/User';
-import emailValidator from '@utils/emailValidator';
+import Agent from '@entities/Agent';
 import { BadRequest, NotFound } from '@utils/http/errors/controlled-errors';
 import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
 
-export default async function updateUserService(id: string, body: any) {
-  const { email, name }: User = body;
+export default async function updateAgentService(id: string, body: any) {
+  const { instructions, name }: Agent = body;
 
   try {
-    if (email && !emailValidator(email)) {
-      throw new BadRequest('Formato de e-mail inválido.');
-    }
 
-    const user = await User.findOne(id);
+    const agent = await Agent.findOne(id);
 
-    if (!user) {
-      throw new NotFound('Usuário não encontrado.');
+    if (!agent) {
+      throw new NotFound('Agente não encontrado.');
     }
 
     const valuesToUpdate = {
-      name: name || user.name,
-      email: email || user.email,
+      name: name || agent.name,
+      instructions: instructions || agent.instructions,
     };
 
-    await User.update(user.id, { ...valuesToUpdate });
+    await Agent.update(agent.id, { ...valuesToUpdate });
   } catch (error) {
     if (error instanceof HttpError) {
       throw error;

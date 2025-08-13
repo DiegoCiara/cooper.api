@@ -3,6 +3,8 @@ import { HttpError } from '../../utils/http/errors/http-errors';
 import updateUserService from '../services/app/account/update';
 import createAgentService from '../services/app/agent/create';
 import findAgents from '../services/app/agent/find';
+import findByIdService from '../services/app/agent/findById';
+import updateAgentService from '../services/app/agent/update';
 
 
 class AccountController {
@@ -11,6 +13,22 @@ class AccountController {
       const agents = await findAgents(req.userId);
 
       res.status(200).json(agents);
+      return;
+    } catch (error) {
+      console.log(error);
+      if (error instanceof HttpError)
+        res.status(error.status).json({ message: error.message });
+      return;
+    }
+  }
+
+  public async findById(req: Request, res: Response): Promise<void> {
+    try {
+      const id = req.params.id;
+
+      const agent = await findByIdService(id);
+
+      res.status(200).json(agent);
       return;
     } catch (error) {
       console.log(error);
@@ -42,8 +60,9 @@ class AccountController {
 
   public async update(req: Request, res: Response): Promise<void> {
     try {
-      await updateUserService(req.userId, req.body);
-      res.status(204).send({ message: 'Usuário atualizado com sucesso' });
+      const id = req.params.id
+      await updateAgentService(id, req.body);
+      res.status(200).send({ message: 'Agente atualizado com sucesso' });
     } catch (error) {
       console.log(error);
       if (error instanceof HttpError)

@@ -10,7 +10,7 @@ import {
   Conflict,
 } from '@utils/http/errors/controlled-errors';
 import emailValidator from '@utils/emailValidator';
-import { createCustomer } from '../billing/stripe/customer/create-customer';
+import { createCustomer } from '../../stripe/customer/create-customer';
 import { generateToken } from '@utils/auth/generateToken';
 
 interface CreateAccountProps {

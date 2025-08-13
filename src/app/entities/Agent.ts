@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import User from './User';
 
-@Entity({ name: 'workspaces' })
+@Entity({ name: 'agents' })
 class Agent extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;

@@ -11,7 +11,7 @@ import {
 } from '@utils/http/errors/controlled-errors';
 import emailValidator from '@utils/emailValidator';
 import Agent from '@entities/Agent';
-import { createSubscription } from '../billing/stripe/subscriptions/create-subscription';
+import { createSubscription } from '../../stripe/subscriptions/create-subscription';
 
 interface CreateAgentProps {
   user_id: string;
@@ -55,7 +55,8 @@ export default async function createAgentService({
     const ia = await Agent.create({
       ...agent,
       model: 'gpt-40-nano',
-      user
+      subscription_id: subscription.id,
+      user,
     }).save();
 
     if (!ia) {
