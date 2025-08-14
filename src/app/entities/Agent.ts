@@ -34,6 +34,12 @@ class Agent extends BaseEntity {
   @Column({ nullable: true })
   subscription_id!: string;
 
+  @Column({ nullable: true })
+  session_id!: string;
+
+  @Column({ nullable: true })
+  session_token!: string;
+
   @Column({ type: 'jsonb', nullable: true })
   metadata!: any;
 

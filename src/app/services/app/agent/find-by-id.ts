@@ -1,6 +1,10 @@
 import Agent from '@entities/Agent';
 import User from '@entities/User';
-import { BadGateway, BadRequest, NotFound } from '@utils/http/errors/controlled-errors';
+import {
+  BadGateway,
+  BadRequest,
+  NotFound,
+} from '@utils/http/errors/controlled-errors';
 import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
 import { findSubscriptionService } from '../../stripe/subscriptions/find-subscription';
@@ -20,17 +24,17 @@ export default async function findByIdService(id: string): Promise<any> {
 
     const plan = await findSubscriptionService(agent.id);
 
-    if(!plan){
-      throw new BadGateway('Não foi possível buscar os dados do plano')
+    if (!plan) {
+      throw new BadGateway('Não foi possível buscar os dados do plano');
     }
 
     const invoices = await listInvoices(agent.subscription_id);
 
-    if(!invoices){
-      throw new BadGateway('Não foi possível buscar cobranças')
+    if (!invoices) {
+      throw new BadGateway('Não foi possível buscar cobranças');
     }
 
-    return { ...agent, plan, invoices: invoices.data };
+    return { ...agent, plan, invoices: invoices.data, whatsapp: { status } };
   } catch (error) {
     console.log(error);
     if (error instanceof HttpError) {

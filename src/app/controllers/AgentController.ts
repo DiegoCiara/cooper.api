@@ -3,11 +3,12 @@ import { HttpError } from '../../utils/http/errors/http-errors';
 import updateUserService from '../services/app/account/update';
 import createAgentService from '../services/app/agent/create';
 import findAgents from '../services/app/agent/find';
-import findByIdService from '../services/app/agent/findById';
+import findByIdService from '../services/app/agent/find-by-id';
 import updateAgentService from '../services/app/agent/update';
+import connectAgent from '../services/app/agent/connect';
+import findConnection from '../services/app/agent/find-connection';
 
-
-class AccountController {
+class AgentController {
   public async find(req: Request, res: Response): Promise<void> {
     try {
       const agents = await findAgents(req.userId);
@@ -43,7 +44,12 @@ class AccountController {
       const body = req.body;
 
       const { agent, price_id, payment_method_id } = body;
-      const user = await createAgentService({ user_id: req.userId, agent, price_id, payment_method_id});
+      const user = await createAgentService({
+        user_id: req.userId,
+        agent,
+        price_id,
+        payment_method_id,
+      });
 
       res.status(201).json({
         message: 'Agente criado com sucesso!',
@@ -60,7 +66,7 @@ class AccountController {
 
   public async update(req: Request, res: Response): Promise<void> {
     try {
-      const id = req.params.id
+      const id = req.params.id;
       await updateAgentService(id, req.body);
       res.status(200).send({ message: 'Agente atualizado com sucesso' });
     } catch (error) {
@@ -70,6 +76,32 @@ class AccountController {
       return;
     }
   }
+
+  public async connect(req: Request, res: Response): Promise<void> {
+    try {
+      const id = req.params.id;
+      const qr_code = await connectAgent(id);
+      res.status(200).send({ qr_code });
+    } catch (error) {
+      console.log(error);
+      if (error instanceof HttpError)
+        res.status(error.status).json({ message: error.message });
+      return;
+    }
+  }
+
+  public async connectionStatus(req: Request, res: Response): Promise<void> {
+    try {
+      const id = req.params.id;
+      const status = await findConnection(id);
+      res.status(200).send({ status });
+    } catch (error) {
+      console.log(error);
+      if (error instanceof HttpError)
+        res.status(error.status).json({ message: error.message });
+      return;
+    }
+  }
 }
 
-export default new AccountController();
+export default new AgentController();

@@ -1,6 +1,7 @@
 import Agent from '@entities/Agent';
 import User from '@entities/User';
 import {
+  BadGateway,
   BadRequest,
   Conflict,
   NotFound,
@@ -8,35 +9,28 @@ import {
 import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
 import { getConnection } from '../../whatsapp/whatsapp';
+import { v4 as uuid } from 'uuid';
 
-export default async function findAgents(id: string): Promise<any[]> {
+export default async function findConnection(id: string) {
   try {
     if (!id) {
       throw new BadRequest('Dados incompletos!');
     }
 
-    const user = await User.findOne(id, { relations: ['agents'] });
+    const agent = await Agent.findOne(id);
 
-    if (!user) {
+    if (!agent) {
       throw new NotFound('Usuário não encontrado.');
     }
 
-    const agents = await Promise.all(
-      user.agents.map(async (e) => {
-        let status = 'CLOSED';
-        if(e.session_token){
-          status = await getConnection(e.session_id, e.session_token);
-        }
-        return { name: e.name, id: e.id, whatsapp: { status } };
-      }),
-    );
+    const status = await getConnection(agent.session_id, agent.session_token);
 
-    return agents;
+    return status;
   } catch (error) {
     console.log(error);
     if (error instanceof HttpError) {
       throw error;
     }
-    throw new InternalServerError('Erro ao buscar conta.');
+    throw new InternalServerError('Erro ao conectar agente.');
   }
 }

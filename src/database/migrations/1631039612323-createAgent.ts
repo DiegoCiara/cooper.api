@@ -39,6 +39,16 @@ export class createAgnet1631039612323 implements MigrationInterface {
             isNullable: true,
           },
           {
+            name: 'session_id',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
+            name: 'session_token',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
             name: 'metadata',
             type: 'jsonb',
             isNullable: true,
