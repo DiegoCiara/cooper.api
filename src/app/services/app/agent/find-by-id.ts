@@ -34,7 +34,7 @@ export default async function findByIdService(id: string): Promise<any> {
       throw new BadGateway('Não foi possível buscar cobranças');
     }
 
-    return { ...agent, plan, invoices: invoices.data, whatsapp: { status } };
+    return { ...agent, plan, invoices: invoices.data };
   } catch (error) {
     console.log(error);
     if (error instanceof HttpError) {
