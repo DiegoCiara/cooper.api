@@ -6,10 +6,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import User from './User';
+import Thread from './Thread';
+import Contact from './Contact';
 
 @Entity({ name: 'agents' })
 class Agent extends BaseEntity {
@@ -40,12 +43,24 @@ class Agent extends BaseEntity {
   @Column({ nullable: true })
   session_token!: string;
 
+  @Column()
+  openai_assistant_id!: string;
+
+  @Column({ default: 20 })
+  waiting_time!: number;
+
   @Column({ type: 'jsonb', nullable: true })
   metadata!: any;
 
   @ManyToOne(() => User, (token) => token.agents)
   @JoinColumn([{ name: 'user', referencedColumnName: 'id' }])
   user!: User;
+
+  @OneToMany(() => Thread, (thread) => thread.agent)
+  threads!: Thread[];
+
+  @OneToMany(() => Contact, (thread) => thread.agent)
+  contacts!: Contact[];
 
   @CreateDateColumn()
   createdAt!: Date;

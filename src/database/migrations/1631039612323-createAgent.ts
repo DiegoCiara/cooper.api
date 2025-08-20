@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
-export class createAgnet1631039612323 implements MigrationInterface {
+export class createAgent1631039612323 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
@@ -41,6 +41,15 @@ export class createAgnet1631039612323 implements MigrationInterface {
           {
             name: 'session_id',
             type: 'varchar',
+            isNullable: true,
+          },
+          {
+            name: 'openai_assistant_id',
+            type: 'varchar',
+          },
+          {
+            name: 'waiting_time',
+            type: 'int',
             isNullable: true,
           },
           {

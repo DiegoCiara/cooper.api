@@ -2,13 +2,14 @@ import {
   MigrationInterface,
   QueryRunner,
   Table,
+  TableForeignKey,
 } from 'typeorm';
 
-export class createUser1631039612322 implements MigrationInterface {
+export class createContact1631039612323 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'users',
+        name: 'contacts',
         columns: [
           {
             name: 'id',
@@ -18,40 +19,17 @@ export class createUser1631039612322 implements MigrationInterface {
             generationStrategy: 'uuid',
           },
           {
+            name: 'agent',
+            type: 'uuid',
+          },
+          {
             name: 'name',
             type: 'varchar',
-          },
-          {
-            name: 'email',
-            type: 'varchar',
-          },
-          {
-            name: 'customer_id',
-            type: 'varchar',
-          },
-          {
-            name: 'picture',
-            type: 'varchar',
             isNullable: true,
           },
           {
-            name: 'has_reset_pass',
-            type: 'boolean',
-            default: false,
-          },
-          {
-            name: 'password_hash',
+            name: 'phone',
             type: 'varchar',
-          },
-          {
-            name: 'token_reset_password',
-            type: 'varchar',
-            isNullable: true,
-          },
-          {
-            name: 'reset_password_expires',
-            type: 'varchar',
-            isNullable: true,
           },
           {
             name: 'created_at',
@@ -71,9 +49,17 @@ export class createUser1631039612322 implements MigrationInterface {
         ],
       }),
     );
+    await queryRunner.createForeignKey(
+      'contacts',
+      new TableForeignKey({
+        columnNames: ['agent'],
+        referencedTableName: 'agents',
+        referencedColumnNames: ['id'],
+      }),
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('users');
+    await queryRunner.dropTable('contacts');
   }
 }

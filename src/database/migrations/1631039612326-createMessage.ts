@@ -2,13 +2,14 @@ import {
   MigrationInterface,
   QueryRunner,
   Table,
+  TableForeignKey,
 } from 'typeorm';
 
-export class createUser1631039612322 implements MigrationInterface {
+export class createMessage1631039612326 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'users',
+        name: 'messages',
         columns: [
           {
             name: 'id',
@@ -18,38 +19,30 @@ export class createUser1631039612322 implements MigrationInterface {
             generationStrategy: 'uuid',
           },
           {
-            name: 'name',
-            type: 'varchar',
+            name: 'thread',
+            type: 'uuid',
           },
           {
-            name: 'email',
-            type: 'varchar',
+            name: 'from',
+            type: 'enum',
+            enum: ['AGENT', 'CONTACT'],
           },
           {
-            name: 'customer_id',
-            type: 'varchar',
-          },
-          {
-            name: 'picture',
-            type: 'varchar',
-            isNullable: true,
-          },
-          {
-            name: 'has_reset_pass',
+            name: 'viewed',
             type: 'boolean',
             default: false,
           },
           {
-            name: 'password_hash',
+            name: 'content',
             type: 'varchar',
           },
           {
-            name: 'token_reset_password',
-            type: 'varchar',
-            isNullable: true,
+            name: 'type',
+            type: 'enum',
+            enum: ['image', 'audio', 'text'],
           },
           {
-            name: 'reset_password_expires',
+            name: 'media',
             type: 'varchar',
             isNullable: true,
           },
@@ -71,9 +64,17 @@ export class createUser1631039612322 implements MigrationInterface {
         ],
       }),
     );
+    await queryRunner.createForeignKey(
+      'messages',
+      new TableForeignKey({
+        columnNames: ['thread'],
+        referencedTableName: 'threads',
+        referencedColumnNames: ['id'],
+      }),
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('users');
+    await queryRunner.dropTable('messages');
   }
 }
