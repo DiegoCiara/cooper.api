@@ -1,21 +1,21 @@
 services:
-  app:
-    restart: always
-    build: .
-    container_name: 'whatsai_app_${ENVIROMENT}'
-    command: sh -c "yarn && yarn build && yarn start"
-    depends_on:
-      - postgres
-    ports:
-      - '${APP_PORT}:${APP_PORT}'
-    volumes:
-      - .:/usr/app
-    environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
+  # app:
+  #   restart: always
+  #   build: .
+  #   container_name: 'whatsai_app_${ENVIROMENT}'
+  #   command: sh -c "yarn && yarn build && yarn start"
+  #   depends_on:
+  #     - postgres
+  #   ports:
+  #     - '${APP_PORT}:${APP_PORT}'
+  #   volumes:
+  #     - .:/usr/app
+  #   environment:
+  #     - DB_HOST=postgres
+  #     - DB_PORT=5432
+  #     - DB_NAME=${DB_NAME}
+  #     - DB_USER=${DB_USER}
+  #     - DB_PASSWORD=${DB_PASSWORD}
 
   postgres:
     restart: always

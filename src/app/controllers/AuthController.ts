@@ -1,8 +1,5 @@
-import User from '@entities/User';
 import { Request, Response } from 'express';
 import dotenv from 'dotenv';
-import { generateToken } from '@utils/auth/generateToken';
-import sendMail from '@src/app/services/mail/sendEmail';
 import authentication from '../services/app/auth/authentication';
 import forgotPasswordService from '../services/app/auth/forgot-password';
 import resetPasswordService from '../services/app/auth/reset-password';

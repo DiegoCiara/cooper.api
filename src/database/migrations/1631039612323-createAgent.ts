@@ -23,12 +23,6 @@ export class createAgent1631039612323 implements MigrationInterface {
             isNullable: true,
           },
           {
-            name: 'temperature',
-            type: 'enum',
-            enum: ['PERSONAL', 'BUSINESS'],
-            default: `'PERSONAL'`,
-          },
-          {
             name: 'picture',
             type: 'varchar',
             isNullable: true,

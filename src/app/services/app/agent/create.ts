@@ -1,17 +1,15 @@
 import User from '@entities/User';
-import sendMail from '../../mail/sendEmail';
-import bcryptjs from 'bcryptjs';
-import { firstName } from '@utils/formats';
 import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
 import {
+  BadGateway,
   BadRequest,
   Conflict,
   PaymentRequired,
 } from '@utils/http/errors/controlled-errors';
-import emailValidator from '@utils/emailValidator';
 import Agent from '@entities/Agent';
 import { createSubscription } from '../../stripe/subscriptions/create-subscription';
+import OpenAI from 'openai';
 
 interface CreateAgentProps {
   user_id: string;
@@ -19,6 +17,10 @@ interface CreateAgentProps {
   price_id: string;
   payment_method_id: string;
 }
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_KEY,
+});
 
 export default async function createAgentService({
   user_id,
@@ -52,11 +54,24 @@ export default async function createAgentService({
       );
     }
 
+
+    const openai_assistant = await openai.beta.assistants.create({
+      name: agent.name,
+      instructions: agent.instructions || '',
+      model: agent.model,
+    });
+
+
+    if (!openai_assistant) {
+      throw new BadGateway('Erro ao criar o usuário');
+    }
+
     const ia = await Agent.create({
       ...agent,
       model: 'gpt-40-nano',
       subscription_id: subscription.id,
       user,
+      openai_assistant_id: openai_assistant.id || '',
     }).save();
 
     if (!ia) {

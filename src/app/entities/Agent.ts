@@ -28,9 +28,6 @@ class Agent extends BaseEntity {
   @Column({ nullable: true })
   instructions!: string;
 
-  @Column({ type: 'enum', enum: ['PERSONAL', 'BUSINESS'], default: 'PERSONAL' })
-  temperature!: string;
-
   @Column({ nullable: true })
   picture!: string;
 
@@ -63,13 +60,13 @@ class Agent extends BaseEntity {
   contacts!: Contact[];
 
   @CreateDateColumn()
-  createdAt!: Date;
+  created_at!: Date;
 
   @UpdateDateColumn()
-  updatedAt!: Date;
+  updated_at!: Date;
 
   @DeleteDateColumn({ nullable: true })
-  deletedAt!: Date; // Modificação feita aqui para permitir valores nulos
+  deleted_at!: Date; // Modificação feita aqui para permitir valores nulos
 }
 
 export default Agent;
