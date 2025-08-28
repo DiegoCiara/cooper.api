@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
 import { HttpError } from '../../utils/http/errors/http-errors';
-import updateUserService from '../services/app/account/update';
-import createAgentService from '../services/app/agent/create';
-import findAgents from '../services/app/agent/find';
-import findByIdService from '../services/app/agent/find-by-id';
-import updateAgentService from '../services/app/agent/update';
-import connectAgent from '../services/app/agent/connect';
-import findConnection from '../services/app/agent/find-connection';
+import findAgents from '../services/app/workspace/find';
+import findByIdService from '../services/app/workspace/find-by-id';
+import updateAgentService from '../services/app/workspace/update';
+import connectAgent from '../services/app/workspace/connect';
+import findConnection from '../services/app/workspace/find-connection';
+import createWorkspaceService from '../services/app/workspace/create';
 
 class AgentController {
   public async find(req: Request, res: Response): Promise<void> {
@@ -43,10 +42,12 @@ class AgentController {
     try {
       const body = req.body;
 
-      const { agent, price_id, payment_method_id } = body;
-      const user = await createAgentService({
+      console.log(body);
+
+      const { workspace, price_id, payment_method_id } = body;
+      const user = await createWorkspaceService({
         user_id: req.userId,
-        agent,
+        workspace,
         price_id,
         payment_method_id,
       });

@@ -3,21 +3,21 @@ import dotenv from 'dotenv';
 import { BadGateway, NotFound } from '@utils/http/errors/controlled-errors';
 import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
-import Agent from '@entities/Agent';
+import Workspace from '@entities/Workspace';
 
 dotenv.config();
 
 const stripe = new Stripe(`${process.env.STRIPE_KEY}`);
 
-export const findSubscriptionService = async (agent_id: string) => {
+export const findSubscriptionService = async (workspace_id: string) => {
   try {
-    const agent = await Agent.findOne(agent_id);
+    const workspace = await Workspace.findOne(workspace_id);
 
-    if (!agent) {
+    if (!workspace) {
       throw new NotFound('Erro ao buscar subscriprion');
     }
     const subcription: any = await stripe.subscriptions.retrieve(
-      agent.subscription_id,
+      workspace.subscription_id,
     );
 
     if (!subcription) {
@@ -30,7 +30,7 @@ export const findSubscriptionService = async (agent_id: string) => {
     }
     return { ...product, plan: subcription.plan };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     if (error instanceof HttpError) {
       throw error;
     }

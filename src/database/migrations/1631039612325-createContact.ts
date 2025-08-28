@@ -5,11 +5,11 @@ import {
   TableForeignKey,
 } from 'typeorm';
 
-export class createThread1631039612325 implements MigrationInterface {
+export class createContact1631039612325 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'threads',
+        name: 'contacts',
         columns: [
           {
             name: 'id',
@@ -19,22 +19,17 @@ export class createThread1631039612325 implements MigrationInterface {
             generationStrategy: 'uuid',
           },
           {
-            name: 'contact',
+            name: 'workspace',
             type: 'uuid',
           },
           {
-            name: 'agent',
-            type: 'uuid',
-          },
-          {
-            name: 'thread_id',
+            name: 'name',
             type: 'varchar',
+            isNullable: true,
           },
           {
-            name: 'status',
-            type: 'enum',
-            enum: ['OPEN', 'CLOSED'],
-            default: `'OPEN'`,
+            name: 'phone',
+            type: 'varchar',
           },
           {
             name: 'created_at',
@@ -55,24 +50,16 @@ export class createThread1631039612325 implements MigrationInterface {
       }),
     );
     await queryRunner.createForeignKey(
-      'threads',
+      'contacts',
       new TableForeignKey({
-        columnNames: ['agent'],
-        referencedTableName: 'agents',
-        referencedColumnNames: ['id'],
-      }),
-    );
-    await queryRunner.createForeignKey(
-      'threads',
-      new TableForeignKey({
-        columnNames: ['contact'],
-        referencedTableName: 'contacts',
+        columnNames: ['workspace'],
+        referencedTableName: 'workspaces',
         referencedColumnNames: ['id'],
       }),
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('threads');
+    await queryRunner.dropTable('contacts');
   }
 }

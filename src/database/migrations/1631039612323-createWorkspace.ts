@@ -1,15 +1,10 @@
-import {
-  MigrationInterface,
-  QueryRunner,
-  Table,
-  TableForeignKey,
-} from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
-export class createContact1631039612324 implements MigrationInterface {
+export class createWorkspace1631039612323 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'contacts',
+        name: 'workspaces',
         columns: [
           {
             name: 'id',
@@ -19,47 +14,55 @@ export class createContact1631039612324 implements MigrationInterface {
             generationStrategy: 'uuid',
           },
           {
-            name: 'agent',
-            type: 'uuid',
+            name: 'name',
+            type: 'varchar',
           },
           {
-            name: 'name',
+            name: 'picture',
             type: 'varchar',
             isNullable: true,
           },
           {
-            name: 'phone',
+            name: 'subscription_id',
             type: 'varchar',
+            isNullable: true,
           },
           {
-            name: 'created_at',
+            name: 'agent',
+            type: 'jsonb',
+          },
+          {
+            name: 'session',
+            type: 'jsonb',
+            isNullable: true,
+          },
+          {
+            name: 'configurations',
+            type: 'jsonb',
+            isNullable: true,
+          },
+          {
+            name: 'createdAt',
             type: 'timestamp',
             default: 'now()',
           },
           {
-            name: 'updated_at',
+            name: 'updatedAt',
             type: 'timestamp',
             default: 'now()',
           },
           {
-            name: 'deleted_at',
+            name: 'deletedAt',
             type: 'timestamp',
             isNullable: true,
           },
         ],
-      }),
-    );
-    await queryRunner.createForeignKey(
-      'contacts',
-      new TableForeignKey({
-        columnNames: ['agent'],
-        referencedTableName: 'agents',
-        referencedColumnNames: ['id'],
-      }),
+      })
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('contacts');
+    await queryRunner.dropTable('workspaces');
   }
 }
+

@@ -1,31 +1,39 @@
-import Agent from '@entities/Agent';
-import User from '@entities/User';
+import Workspace from '@entities/Workspace';
 import {
-  BadGateway,
+
   BadRequest,
-  Conflict,
   NotFound,
 } from '@utils/http/errors/controlled-errors';
 import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
-import { getConnection } from '../../whatsapp/whatsapp';
+import { startSession } from '../../whatsapp/whatsapp';
 import { v4 as uuid } from 'uuid';
 
-export default async function findConnection(id: string) {
+export default async function connectAgent(id: string) {
   try {
     if (!id) {
       throw new BadRequest('Dados incompletos!');
     }
 
-    const agent = await Agent.findOne(id);
+    const workspace = await Workspace.findOne(id);
 
-    if (!agent) {
+    if (!workspace) {
       throw new NotFound('Usuário não encontrado.');
     }
 
-    const status = await getConnection(agent.session_id, agent.session_token);
+    const session_id = uuid();
 
-    return status;
+    if (!session_id) {
+      throw new InternalServerError('Erro ao gerar id da sessão');
+    }
+
+    const { qr_code, token, session } = await startSession(session_id);
+
+    await Workspace.update(workspace.id, {
+      session: { session_id: session, session_token: token },
+    });
+
+    return qr_code;
   } catch (error) {
     console.log(error);
     if (error instanceof HttpError) {

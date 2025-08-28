@@ -10,12 +10,27 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import User from './User';
 import Thread from './Thread';
 import Contact from './Contact';
+import Access from './Access';
 
-@Entity({ name: 'agents' })
-class Agent extends BaseEntity {
+
+interface Agent {
+  id: string;
+  name: string;
+  model: string;
+  instructions?: string;
+}
+interface Session {
+  session_id: string;
+  session_token: string;
+}
+interface Configurations {
+  waiting_time: 20;
+}
+
+@Entity({ name: 'workspaces' })
+class Workspace extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -23,41 +38,28 @@ class Agent extends BaseEntity {
   name!: string;
 
   @Column()
-  model!: string;
-
-  @Column({ nullable: true })
-  instructions!: string;
-
-  @Column({ nullable: true })
-  picture!: string;
+  type!: string;
 
   @Column({ nullable: true })
   subscription_id!: string;
 
-  @Column({ nullable: true })
-  session_id!: string;
-
-  @Column({ nullable: true })
-  session_token!: string;
-
-  @Column()
-  openai_assistant_id!: string;
-
-  @Column({ default: 20 })
-  waiting_time!: number;
+  @Column({ type: 'jsonb' })
+  agent!: Agent;
 
   @Column({ type: 'jsonb', nullable: true })
-  metadata!: any;
+  session!: Session;
 
-  @ManyToOne(() => User, (token) => token.agents)
-  @JoinColumn([{ name: 'user', referencedColumnName: 'id' }])
-  user!: User;
+  @Column({ type: 'jsonb', nullable: true })
+  configurations!: Configurations;
 
-  @OneToMany(() => Thread, (thread) => thread.agent)
+  @OneToMany(() => Thread, (thread) => thread.workspace)
   threads!: Thread[];
 
-  @OneToMany(() => Contact, (thread) => thread.agent)
+  @OneToMany(() => Contact, (thread) => thread.workspace)
   contacts!: Contact[];
+
+  @OneToMany(() => Access, (thread) => thread.workspace)
+  accesses!: Access[];
 
   @CreateDateColumn()
   created_at!: Date;
@@ -69,4 +71,4 @@ class Agent extends BaseEntity {
   deleted_at!: Date; // Modificação feita aqui para permitir valores nulos
 }
 
-export default Agent;
+export default Workspace;

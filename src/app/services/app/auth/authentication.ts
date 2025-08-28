@@ -1,4 +1,4 @@
-import Agent from '@entities/Agent';
+import Agent from '@entities/Workspace';
 import User from '@entities/User';
 import { generateToken } from '@utils/auth/generateToken';
 import {

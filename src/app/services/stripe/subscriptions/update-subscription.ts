@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
 import { BadGateway, NotFound } from '@utils/http/errors/controlled-errors';
-import Agent from '@entities/Agent';
+import Agent from '@entities/Workspace';
 
 dotenv.config();
 
@@ -22,7 +22,9 @@ export const updateSubscription = async (
       throw new NotFound('Agente não encontrado');
     }
 
-    const subscription = await stripe.subscriptions.retrieve(agent.subscription_id);
+    const subscription = await stripe.subscriptions.retrieve(
+      agent.subscription_id,
+    );
 
     if (!subscription) {
       throw new NotFound('Assinatura não encontrada');

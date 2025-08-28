@@ -12,29 +12,32 @@ import {
 } from 'typeorm';
 import Message from './Message';
 import Contact from './Contact';
-import Agent from './Agent';
+import Workspace from './Workspace';
 
 @Entity({ name: 'threads' })
 class Thread extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @ManyToOne(() => Contact, (token) => token.threads)
+  @ManyToOne(() => Contact, (token) => token.threads, { nullable: true })
   @JoinColumn([{ name: 'contact', referencedColumnName: 'id' }])
   contact!: Contact;
 
-  @ManyToOne(() => Agent, (token) => token.threads)
-  @JoinColumn([{ name: 'agent', referencedColumnName: 'id' }])
-  agent!: Agent;
+  @ManyToOne(() => Workspace, (token) => token.threads)
+  @JoinColumn([{ name: 'workspace', referencedColumnName: 'id' }])
+  workspace!: Workspace;
 
-  @OneToMany(() => Message, (message) => message.thread)
-  messages!: Message[];
+  @Column() // guarda o número do contato para deveolver a mensagem sem cria-lo ainda
+  to!: string;
+
+  @Column()
+  thread_id!: string;
 
   @Column({ type: 'enum', enum: ['OPEN', 'CLOSED'], default: 'OPEN' })
   status!: string;
 
-  @Column()
-  thread_id!: string;
+  @OneToMany(() => Message, (message) => message.thread)
+  messages!: Message[];
 
   @CreateDateColumn()
   created_at!: Date;

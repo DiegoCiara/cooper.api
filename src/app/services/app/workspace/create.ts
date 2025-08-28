@@ -7,13 +7,20 @@ import {
   Conflict,
   PaymentRequired,
 } from '@utils/http/errors/controlled-errors';
-import Agent from '@entities/Agent';
 import { createSubscription } from '../../stripe/subscriptions/create-subscription';
 import OpenAI from 'openai';
+import Workspace from '@entities/Workspace';
+import Access from '@entities/Access';
 
 interface CreateAgentProps {
   user_id: string;
-  agent: Agent;
+  workspace: {
+    workspace: Workspace;
+    agent: {
+      name: string;
+      instructions?: string;
+    }
+  };
   price_id: string;
   payment_method_id: string;
 }
@@ -22,17 +29,17 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_KEY,
 });
 
-export default async function createAgentService({
+export default async function createWorkspaceService({
   user_id,
-  agent,
+  workspace,
   price_id,
   payment_method_id,
 }: CreateAgentProps): Promise<{
   id: string;
 }> {
   try {
-    // console.log(user_id, agent, price_id, payment_method_id)
-    if (!user_id || !agent || !price_id || !payment_method_id) {
+    console.log(user_id, workspace, price_id, payment_method_id)
+    if (!user_id || !workspace || !price_id || !payment_method_id) {
       throw new BadRequest('Dados incompletos!');
     }
 
@@ -54,32 +61,43 @@ export default async function createAgentService({
       );
     }
 
-
     const openai_assistant = await openai.beta.assistants.create({
-      name: agent.name,
-      instructions: agent.instructions || '',
-      model: agent.model,
+      name: workspace.agent.name,
+      instructions: workspace.agent.instructions || '',
+      model: 'gpt-4.1-nano',
     });
-
 
     if (!openai_assistant) {
       throw new BadGateway('Erro ao criar o usuário');
     }
 
-    const ia = await Agent.create({
-      ...agent,
-      model: 'gpt-40-nano',
-      subscription_id: subscription.id,
-      user,
-      openai_assistant_id: openai_assistant.id || '',
+    const ia = await Workspace.create({
+      name: workspace.workspace.name,
+      type: workspace.workspace.type,
+      agent:{
+        name: workspace.agent.name,
+        instructions: workspace.agent.instructions,
+        model: 'gpt-4.1-nano',
+      }
     }).save();
 
     if (!ia) {
-      throw new InternalServerError('Erro ao criar o usuário');
+      throw new InternalServerError('Erro ao criar workspace, entre em contato com nosso suporte!');
+    }
+
+
+    const access = await Access.create({
+      workspace: ia,
+      user: user,
+      role: 'OWNER',
+    }).save();
+
+    if (!access) {
+      throw new InternalServerError('Erro ao criar conta, entre em contato com nosso suporte!');
     }
 
     return {
-      id: ia.id,
+      id: access.id,
     };
   } catch (error) {
     console.log(error);

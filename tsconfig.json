@@ -28,7 +28,11 @@
       "@src/*": ["./src/*"]
     }
   },
-  "include": ["src", "__tests__", "src/app/.ts", "src/app/controllers/AgentController.ts",],
+  "include": [
+    "src",
+    "__tests__",
+    "src/app/.ts",
+    "src/app/controllers/WorkspaceController.ts"
+  ],
   "exclude": ["node_modules"]
 }
-

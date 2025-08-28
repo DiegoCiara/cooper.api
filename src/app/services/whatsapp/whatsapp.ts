@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Agent from '@entities/Agent';
+import Agent from '@entities/Workspace';
 import { BadRequest, NotFound } from '@utils/http/errors/controlled-errors';
 import { HttpError } from '@utils/http/errors/http-errors';
 import { formatToWhatsAppNumber } from '@utils/formats';
@@ -99,9 +99,11 @@ export async function startSession(session_id: string) {
   }
 }
 
-export async function getConnection(session_id: string, session_token: string): Promise<string> {
+export async function getConnection(
+  session_id: string,
+  session_token: string,
+): Promise<string> {
   try {
-
     if (!session_id || !session_token) {
       throw new BadRequest('Valores inválidos para getConnection');
     }
@@ -119,7 +121,9 @@ export async function getConnection(session_id: string, session_token: string): 
       { headers },
     );
 
-    const { data: { status }} = response;
+    const {
+      data: { status },
+    } = response;
 
     return status;
   } catch (error) {

@@ -14,24 +14,23 @@ import {
 import Thread from './Thread';
 import Agent from './Workspace';
 import Workspace from './Workspace';
+import User from './User';
 
-@Entity({ name: 'contacts' })
-class Contact extends BaseEntity {
+@Entity({ name: 'accesses' })
+class Access extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ nullable: true })
-  name!: string;
+  @Column({ type: 'enum', enum: ['MEMBER', 'ADMIN', 'OWNER'], default: 'MEMBER' })
+  role!: string;
 
-  @Column()
-  phone!: string;
-
-  @OneToMany(() => Thread, (thread) => thread.contact)
-  threads!: Thread[];
-
-  @ManyToOne(() => Workspace, (token) => token.threads, { nullable: true })
+  @ManyToOne(() => Workspace, (token) => token.accesses, { nullable: true })
   @JoinColumn([{ name: 'workspace', referencedColumnName: 'id' }])
   workspace!: Workspace;
+
+  @ManyToOne(() => User, (token) => token.accesses, { nullable: true })
+  @JoinColumn([{ name: 'user', referencedColumnName: 'id' }])
+  user!: User;
 
   @Column({ nullable: true })
   @CreateDateColumn()
@@ -44,4 +43,4 @@ class Contact extends BaseEntity {
   deleted_at!: Date;
 }
 
-export default Contact;
+export default Access;

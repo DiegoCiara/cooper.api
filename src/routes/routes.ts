@@ -4,7 +4,7 @@ import AccountRoutes from './account.routes';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { ensureAuthenticated } from '@middlewares/ensureAuthenticated';
-import AgentRoutes from './agent.routes';
+import WorkspaceRoutes from './workspace.routes';
 import AiRoutes from './ai.routes';
 import BillingRoutes from './billing.routes';
 
@@ -53,7 +53,7 @@ routes.get('/', (req, res) => {
 routes.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 routes.use('/auth/', AuthRoutes);
 routes.use('/account', AccountRoutes);
-routes.use('/agent', ensureAuthenticated, AgentRoutes);
+routes.use('/workspace', ensureAuthenticated, WorkspaceRoutes);
 routes.use('/ai', ensureAuthenticated, AiRoutes);
 routes.use('/billing', ensureAuthenticated, BillingRoutes);
 

@@ -1,4 +1,4 @@
-import Agent from '@entities/Agent';
+import Agent from '@entities/Workspace';
 import User from '@entities/User';
 import { generateToken } from '@utils/auth/generateToken';
 import {
@@ -11,9 +11,13 @@ import { InternalServerError } from '@utils/http/errors/internal-errors';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-
 interface Authentication {
-  user: { id: string; name: string; email: string; has_validate_email: boolean };
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    has_validate_email: boolean;
+  };
   token: string;
 }
 
@@ -47,7 +51,7 @@ export default async function validateEmailAndAuthenticate(
       throw new NotFound('Usuário não encontrado.');
     }
 
-    await User.update(user.id, { has_validate_email: true })
+    await User.update(user.id, { has_validate_email: true });
 
     return {
       user: {

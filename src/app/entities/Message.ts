@@ -12,8 +12,7 @@ import {
 } from 'typeorm';
 import Thread from './Thread';
 import User from './User';
-import Agent from './Agent';
-
+import Agent from './Workspace';
 
 @Entity({ name: 'messages' })
 class Message extends BaseEntity {
@@ -24,7 +23,7 @@ class Message extends BaseEntity {
   @JoinColumn([{ name: 'thread', referencedColumnName: 'id' }])
   thread!: Thread;
 
-  @Column({ type: 'enum', enum: [ 'AGENT', 'CONTACT'] })
+  @Column({ type: 'enum', enum: ['AGENT', 'CONTACT'] })
   from!: string;
 
   @Column({ default: false })
