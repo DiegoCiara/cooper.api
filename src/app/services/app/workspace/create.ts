@@ -75,6 +75,7 @@ export default async function createWorkspaceService({
     const ia = await Workspace.create({
       name: workspace.workspace.name,
       type: workspace.workspace.type,
+      subscription_id: subscription.id,
       agent:{
         name: workspace.agent.name,
         instructions: workspace.agent.instructions,

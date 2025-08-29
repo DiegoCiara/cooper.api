@@ -8,6 +8,8 @@ import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
 import { startSession } from '../../whatsapp/whatsapp';
 import { v4 as uuid } from 'uuid';
+import { isAdmin } from '@utils/auth/isAdmin';
+import Access from '@entities/Access';
 
 export default async function connectAgent(id: string) {
   try {
@@ -15,10 +17,20 @@ export default async function connectAgent(id: string) {
       throw new BadRequest('Dados incompletos!');
     }
 
-    const workspace = await Workspace.findOne(id);
+    const access = await Access.findOne(id, { relations: ['workspace'] });
+
+    if (!access) {
+      throw new NotFound('Acesso não encontrado.');
+    }
+
+    if (!isAdmin(access.role)) {
+      throw new NotFound('Acesso não encontrado.');
+    }
+
+    const workspace = await Workspace.findOne(access.workspace.id);
 
     if (!workspace) {
-      throw new NotFound('Usuário não encontrado.');
+      throw new NotFound('Workspace não encontrado.');
     }
 
     const session_id = uuid();

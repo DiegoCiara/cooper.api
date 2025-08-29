@@ -40,7 +40,7 @@ class Workspace extends BaseEntity {
   @Column()
   type!: string;
 
-  @Column({ nullable: true })
+  @Column()
   subscription_id!: string;
 
   @Column({ type: 'jsonb' })

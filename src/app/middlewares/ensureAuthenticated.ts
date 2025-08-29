@@ -23,9 +23,9 @@ export async function ensureAuthenticated(
 
     if (!/^Bearer$/.test(bearer)) throw new Unauthorized('Token malformatted');
 
-    jwt.verify(token, `${process.env.SECRET}`, async (err, decoded: any) => {
-      if (err) throw new Unauthorized('Token invalid');
+    try {
 
+      const decoded: any = jwt.verify(token, `${process.env.SECRET}`);
       const user = await User.findOneOrFail(decoded.id);
 
       if (!user) {
@@ -35,13 +35,16 @@ export async function ensureAuthenticated(
       req.userId = decoded.id;
 
       if (next) return next();
-    });
+
+    } catch (error) {
+      throw new Unauthorized('Token invalid');
+
+    }
   } catch (error) {
     if (error instanceof HttpError) {
-      res.status(error.status).json({ message: error.message });
-      return
+      return res.status(error.status).json({ message: error.message });
     }
 
-    throw new InternalServerError();
+    return res.status(500).json({ message: 'Internal server error.' });
   }
 }

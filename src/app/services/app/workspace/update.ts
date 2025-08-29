@@ -1,5 +1,7 @@
+import Access from '@entities/Access';
 import Workspace from '@entities/Workspace';
-import { NotFound } from '@utils/http/errors/controlled-errors';
+import { isAdmin } from '@utils/auth/isAdmin';
+import { NotFound, Unauthorized } from '@utils/http/errors/controlled-errors';
 import { HttpError } from '@utils/http/errors/http-errors';
 import { InternalServerError } from '@utils/http/errors/internal-errors';
 
@@ -7,10 +9,20 @@ export default async function updateWorkspaceService(id: string, body: any) {
   const { agent, name, configurations }: Workspace = body;
 
   try {
-    const workspace = await Workspace.findOne(id);
+    const access = await Access.findOne(id, { relations: ['workspace'] });
+
+    if (!access) {
+      throw new NotFound('Acesso não encontrado.');
+    }
+
+    if (!isAdmin(access.role)) {
+      throw new Unauthorized('Não autorizado.');
+    }
+
+    const workspace = await Workspace.findOne(access.workspace.id);
 
     if (!workspace) {
-      throw new NotFound('Agente não encontrado.');
+      throw new NotFound('Workspace não encontrado.');
     }
 
     const valuesToUpdate = {
@@ -20,9 +32,10 @@ export default async function updateWorkspaceService(id: string, body: any) {
         instructions: agent.instructions || workspace.agent.instructions,
       },
       name: name || workspace.name,
-      configurations:{
-        waiting_time: configurations.waiting_time || workspace.configurations.waiting_time,
-      }
+      configurations: {
+        waiting_time:
+          configurations.waiting_time || workspace.configurations.waiting_time,
+      },
     };
 
     await Workspace.update(workspace.id, { ...valuesToUpdate });

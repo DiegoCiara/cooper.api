@@ -34,6 +34,6 @@ export const findSubscriptionService = async (workspace_id: string) => {
     if (error instanceof HttpError) {
       throw error;
     }
-    throw new InternalServerError();
+    throw new InternalServerError('Erro ao buscar planos');
   }
 };

@@ -12,8 +12,9 @@ import { listInvoices } from '../../stripe/invoices/list-invoices';
 import Workspace from '@entities/Workspace';
 import Access from '@entities/Access';
 import { isAdmin } from '@utils/auth/isAdmin';
+import { generateToken } from '@utils/auth/generateToken';
 
-export default async function findByIdService(id: string): Promise<any> {
+export default async function signWorkspaceService(id: string): Promise<any> {
   try {
 
     if (!id) {
@@ -27,7 +28,7 @@ export default async function findByIdService(id: string): Promise<any> {
     }
 
     if (!isAdmin(access.role)) {
-      throw new NotFound('Acesso não encontrado.');
+      throw new NotFound('Não autorizado.');
     }
 
     const workspace = await Workspace.findOne(access.workspace.id);
@@ -36,19 +37,8 @@ export default async function findByIdService(id: string): Promise<any> {
       throw new NotFound('Workspace não encontrado.');
     }
 
-    const plan = await findSubscriptionService(workspace.id);
-
-    if (!plan) {
-      throw new BadGateway('Não foi possível buscar os dados do plano');
-    }
-
-    const invoices = await listInvoices(workspace.subscription_id);
-
-    if (!invoices) {
-      throw new BadGateway('Não foi possível buscar cobranças');
-    }
-
-    return { ...workspace, plan, invoices: invoices.data };
+    const workspace_token = await generateToken({ id: workspace.id })
+    return { id: workspace.id, token: workspace_token };
   } catch (error) {
     console.log(error);
     if (error instanceof HttpError) {

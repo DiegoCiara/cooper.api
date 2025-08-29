@@ -25,7 +25,6 @@ export class createWorkspace1631039612323 implements MigrationInterface {
           {
             name: 'subscription_id',
             type: 'varchar',
-            isNullable: true,
           },
           {
             name: 'agent',
