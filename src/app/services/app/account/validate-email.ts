@@ -11,6 +11,10 @@ import { InternalServerError } from '@utils/http/errors/internal-errors';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
+interface AccessWorkspace {
+  id: string;
+  name: string;
+}
 interface Authentication {
   user: {
     id: string;
@@ -18,6 +22,7 @@ interface Authentication {
     email: string;
     has_validate_email: boolean;
   };
+  accesses: AccessWorkspace[];
   token: string;
 }
 
@@ -45,6 +50,7 @@ export default async function validateEmailAndAuthenticate(
 
     const user = await User.findOne(decoded.id, {
       where: { email: decoded.email },
+      relations: ['accesses', 'accesses.workspace'],
     });
 
     if (!user) {
@@ -53,13 +59,21 @@ export default async function validateEmailAndAuthenticate(
 
     await User.update(user.id, { has_validate_email: true });
 
+    const accesses = await user.accesses.map(access => {
+      return {
+        id: access.id,
+        name: access.workspace.name,
+      }
+    });
+
     return {
       user: {
         id: user.id,
-        email: user.email,
         name: user.name,
-        has_validate_email: true,
+        email: user.email,
+        has_validate_email: user.has_validate_email,
       },
+      accesses,
       token: generateToken({ id: user.id }),
     };
   } catch (error) {

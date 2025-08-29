@@ -36,6 +36,7 @@ export default async function createWorkspaceService({
   payment_method_id,
 }: CreateAgentProps): Promise<{
   id: string;
+  name: string;
 }> {
   try {
     console.log(user_id, workspace, price_id, payment_method_id)
@@ -98,6 +99,7 @@ export default async function createWorkspaceService({
 
     return {
       id: access.id,
+      name: access.workspace.name,
     };
   } catch (error) {
     console.log(error);

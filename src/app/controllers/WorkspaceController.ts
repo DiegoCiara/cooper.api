@@ -6,6 +6,7 @@ import updateAgentService from '../services/app/workspace/update';
 import connectAgent from '../services/app/workspace/connect';
 import findConnection from '../services/app/workspace/find-connection';
 import createWorkspaceService from '../services/app/workspace/create';
+import { access } from 'fs';
 
 class AgentController {
   public async find(req: Request, res: Response): Promise<void> {
@@ -45,7 +46,7 @@ class AgentController {
       console.log(body);
 
       const { workspace, price_id, payment_method_id } = body;
-      const user = await createWorkspaceService({
+      const access = await createWorkspaceService({
         user_id: req.userId,
         workspace,
         price_id,
@@ -54,7 +55,7 @@ class AgentController {
 
       res.status(201).json({
         message: 'Agente criado com sucesso!',
-        id: user.id,
+        access,
       });
       return;
     } catch (error) {

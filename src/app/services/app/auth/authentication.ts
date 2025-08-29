@@ -12,6 +12,10 @@ import bcrypt from 'bcryptjs';
 import sendMail from '../../mail/sendEmail';
 import { firstName } from '@utils/formats';
 
+interface AccessWorkspace {
+  id: string;
+  name: string;
+}
 interface Authentication {
   user: {
     id: string;
@@ -19,6 +23,7 @@ interface Authentication {
     email: string;
     has_validate_email: boolean;
   };
+  accesses: AccessWorkspace[];
   token: string;
 }
 
@@ -33,6 +38,7 @@ export default async function authentication(
 
     const user = await User.findOne({
       where: { email },
+      relations: ['accesses', 'accesses.workspace'],
     });
 
     if (!user) {
@@ -67,6 +73,13 @@ export default async function authentication(
       }
     }
 
+    const accesses = await user.accesses.map(access => {
+      return {
+        id: access.id,
+        name: access.workspace.name,
+      }
+    });
+
     return {
       user: {
         id: user.id,
@@ -74,6 +87,7 @@ export default async function authentication(
         email: user.email,
         has_validate_email: user.has_validate_email,
       },
+      accesses,
       token: generateToken({ id: user.id }),
     };
   } catch (error) {
