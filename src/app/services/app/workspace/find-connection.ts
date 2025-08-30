@@ -17,14 +17,7 @@ export default async function findConnection(id: string) {
       throw new BadRequest('Dados incompletos!');
     }
 
-    const access = await Access.findOne(id, { relations: ['workspace'] });
-
-
-    if (!access) {
-      throw new NotFound('Acesso não encontrado.');
-    }
-
-    const workspace = await Workspace.findOne(access.workspace.id);
+    const workspace = await Workspace.findOne(id);
 
     if (!workspace) {
       throw new NotFound('Usuário não encontrado.');

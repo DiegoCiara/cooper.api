@@ -9,17 +9,8 @@ export default async function updateWorkspaceService(id: string, body: any) {
   const { agent, name, configurations }: Workspace = body;
 
   try {
-    const access = await Access.findOne(id, { relations: ['workspace'] });
 
-    if (!access) {
-      throw new NotFound('Acesso não encontrado.');
-    }
-
-    if (!isAdmin(access.role)) {
-      throw new Unauthorized('Não autorizado.');
-    }
-
-    const workspace = await Workspace.findOne(access.workspace.id);
+    const workspace = await Workspace.findOne(id);
 
     if (!workspace) {
       throw new NotFound('Workspace não encontrado.');

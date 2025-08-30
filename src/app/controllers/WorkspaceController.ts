@@ -27,7 +27,7 @@ class AgentController {
   public async findById(req: Request, res: Response): Promise<void> {
     try {
       console.log('CHAMOU O FIND BY ID')
-      const agent = await findByIdService(req.accessId);
+      const agent = await findByIdService(req.workspaceId);
 
       res.status(200).json(agent);
       return;
@@ -80,7 +80,7 @@ class AgentController {
 
   public async update(req: Request, res: Response): Promise<void> {
     try {
-      await updateAgentService(req.accessId, req.body);
+      await updateAgentService(req.workspaceId, req.body);
       res.status(200).send({ message: 'Agente atualizado com sucesso' });
     } catch (error) {
       console.log(error);
@@ -92,7 +92,7 @@ class AgentController {
 
   public async connect(req: Request, res: Response): Promise<void> {
     try {
-      const qr_code = await connectAgent(req.accessId);
+      const qr_code = await connectAgent(req.workspaceId);
       res.status(200).send({ qr_code });
     } catch (error) {
       console.log(error);
@@ -104,7 +104,7 @@ class AgentController {
 
   public async connectionStatus(req: Request, res: Response): Promise<void> {
     try {
-      const status = await findConnection(req.accessId);
+      const status = await findConnection(req.workspaceId);
       res.status(200).send({ status });
     } catch (error) {
       console.log(error);

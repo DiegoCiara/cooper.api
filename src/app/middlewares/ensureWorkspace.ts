@@ -21,13 +21,13 @@ export async function ensureWorkspace(
     }
 
     try {
-      const workspace = await Access.findOneOrFail(accessIdHeader);
+      const access = await Access.findOneOrFail(accessIdHeader, { relations: ['workspace']});
 
-      if (!workspace) {
+      if (!access) {
         return res.status(401).json({ message: 'Workspace inválido' });
       }
 
-      req.accessId = workspace.id;
+      req.workspaceId = access.workspace.id;
 
       if (next) return next();
     } catch (dbError) {
